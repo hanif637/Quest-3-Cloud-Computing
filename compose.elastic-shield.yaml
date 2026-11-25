@@ -1,0 +1,79 @@
+services:
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: elastic-shield-flask
+    environment:
+      NIM: ${NIM:-242410102070}
+      PORT: "5000"
+    ports:
+      - "127.0.0.1:5002:5000"
+    networks:
+      - elastic-shield
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v3.16.0
+    container_name: elastic-shield-prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - flask
+    networks:
+      - elastic-shield
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:13.3.1
+    container_name: elastic-shield-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - elastic-shield
+    restart: unless-stopped
+
+  cadvisor:
+    image: ghcr.io/google/cadvisor:v0.61.1
+    container_name: elastic-shield-cadvisor
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    networks:
+      - elastic-shield
+    restart: unless-stopped
+
+networks:
+  elastic-shield:
+    name: elastic-shield-network
+    driver: bridge
+
+volumes:
+  prometheus_data:
+    name: elastic-shield-prometheus-data
+  grafana_data:
+    name: elastic-shield-grafana-data

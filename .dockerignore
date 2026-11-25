@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.git/
+.gitignore
+*.zip
+compose.elastic-shield.yaml
+load_test.py
+monitoring/
+DOKUMENTASI-ARSITEKTUR-ELASTIC-SHIELD.md

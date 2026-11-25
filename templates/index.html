@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#102a43">
+  <title>Status Sensor Cuaca Kota Jember</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Smart City Jember">
+        <span class="brand-mark">SJ</span>
+        <span>
+          <strong>SMART CITY</strong>
+          <small>KABUPATEN JEMBER</small>
+        </span>
+      </a>
+      <div class="topbar-right">
+        <span class="live-dot"></span>
+        <span>Dashboard Monitoring</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">PUSAT DATA LINGKUNGAN</p>
+          <h1>Status Sensor Cuaca<br><span>Kota Jember</span></h1>
+          <p class="hero-description">Pantau kondisi suhu dan kelembapan melalui dashboard Smart City Kabupaten Jember.</p>
+          <div class="hero-meta">
+            <span class="status-pill"><span class="live-dot"></span> Sistem berjalan</span>
+            <span class="updated">Pembaruan: {{ waktu_update }}</span>
+          </div>
+        </div>
+        <div class="weather-art" aria-hidden="true">
+          <div class="sun"></div>
+          <div class="cloud cloud-one"></div>
+          <div class="cloud cloud-two"></div>
+          <div class="weather-rings"></div>
+          <span class="art-label">JEMBER<br>SMART CITY</span>
+        </div>
+      </section>
+
+      <section class="identity-card" aria-label="Identitas mahasiswa">
+        <div class="identity-icon">ID</div>
+        <div class="identity-text">
+          <span class="section-kicker">IDENTITAS PENGGUNA</span>
+          <strong>NIM Mahasiswa</strong>
+        </div>
+        <div class="nim-value">{{ nim }}</div>
+      </section>
+
+      <section class="section-heading">
+        <div>
+          <p class="eyebrow">PEMANTAUAN LINGKUNGAN</p>
+          <h2>Ringkasan Sensor</h2>
+        </div>
+        <span class="data-tag">DATA SIMULASI</span>
+      </section>
+
+      <section class="sensor-grid">
+        {% for item in sensor %}
+        <article class="sensor-card">
+          <div class="sensor-card-top">
+            <div>
+              <span class="sensor-code">{{ item.kode }}</span>
+              <h3>{{ item.nama }}</h3>
+            </div>
+            <span class="normal-pill"><span></span>{{ item.status }}</span>
+          </div>
+          <div class="metric-row">
+            <div class="metric temperature">
+              <div class="metric-icon">°C</div>
+              <div>
+                <span class="metric-label">Suhu Udara</span>
+                <strong>{{ '%.1f'|format(item.suhu) }}<small>°C</small></strong>
+              </div>
+            </div>
+            <div class="metric humidity">
+              <div class="metric-icon">％</div>
+              <div>
+                <span class="metric-label">Kelembapan</span>
+                <strong>{{ item.kelembapan }}<small>%</small></strong>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span><i class="check-icon">✓</i> Sensor terhubung</span>
+            <span>Update otomatis saat halaman dimuat</span>
+          </div>
+        </article>
+        {% endfor %}
+      </section>
+
+      <section class="info-note">
+        <div class="info-symbol">i</div>
+        <p><strong>Informasi demonstrasi:</strong> nilai suhu dan kelembapan pada halaman ini merupakan data simulasi untuk kebutuhan praktikum containerization. Aplikasi belum terhubung ke perangkat sensor fisik.</p>
+      </section>
+    </main>
+
+    <footer>
+      <span>© 2026 Smart City Kabupaten Jember</span>
+      <span>Powered by Flask &amp; Docker</span>
+    </footer>
+  </div>
+</body>
+</html>
